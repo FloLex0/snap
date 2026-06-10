@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SnapChat— Connect & Reveal</title>
+  <meta name="description" content="Connect your username to reveal best friends, snapping mods, live chats and more on SnapChat—." />
+  <link rel="stylesheet" href="tiksocial.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <button class="icon-btn" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="Theme">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+    <h1 class="brand">SnapChat—</h1>
+  </header>
+
+  <main class="container">
+    <div class="avatar-banner">
+      <img src="https://i.imgur.com/hVGPYwP.png" alt="SnapChat— avatars" />
+    </div>
+
+    <div class="input-section">
+      <input id="username" type="text" placeholder="Enter Username" />
+      <button id="connect-btn" type="button">Connect</button>
+    </div>
+
+    <div class="features">
+      <button class="feature"><span class="f-icon">💖</span><div class="f-info"><h3>Best Friend List</h3><p>Reveal 8 Best friends of any user</p></div><span class="chev">›</span></button>
+      <button class="feature"><span class="f-icon">🧐</span><div class="f-info"><h3>Snapping With Mod</h3><p>Find out who they're snapping with</p></div><span class="chev">›</span></button>
+      <button class="feature"><span class="f-icon">🖼️</span><div class="f-info"><h3>My Eyes Only</h3><p>Request My Eyes Only memories</p></div><span class="chev">›</span></button>
+      <button class="feature"><span class="f-icon">👀</span><div class="f-info"><h3>LIVE CHAT</h3><p>See them writing live</p></div><span class="chev">›</span></button>
+      <button class="feature"><span class="f-icon">✅</span><div class="f-info"><h3>Verification</h3><p>Snapchat account verification</p></div><span class="chev">›</span></button>
+      <button class="feature"><span class="f-icon">📱</span><div class="f-info"><h3>Snap Recap 2025</h3><p>View 2025 Recap of any user</p></div><span class="chev">›</span></button>
+    </div>
+  </main>
+
+  <!-- Connecting to servers overlay -->
+  <div id="connecting" class="connecting-overlay hidden" role="dialog" aria-modal="true">
+    <div class="connecting-box">
+      <div class="server-nodes">
+        <div class="node active"></div>
+        <div class="node-line"></div>
+        <div class="node"></div>
+        <div class="node-line"></div>
+        <div class="node"></div>
+        <div class="node-line"></div>
+        <div class="node"></div>
+      </div>
+      <h2 id="connecting-status">Connecting to servers...</h2>
+      <p id="connecting-sub">Establishing secure tunnel to SnapChat— API</p>
+      <div class="progress-bar"><div class="progress-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Prank popup -->
+  <div id="popup" class="popup-overlay hidden" role="dialog" aria-modal="true">
+    <div class="popup">
+      <button id="close-btn" class="close-btn" aria-label="Close">×</button>
+      <div class="popup-emoji">🔑</div>
+      <h2>Human Verification</h2>
+      <p>User: <span id="prank-username"></span> — Complete the few details below to continue</p>
+      <div class="popup-actions">
+        <a href="https://trksy.org/aff_c?offer_id=324&aff_id=155597" class="btn btn-primary">Confirm</a>
+        <button id="haha2-btn" class="btn btn-secondary" type="button">Back</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const popup = document.getElementById('popup');
+    const connectingOverlay = document.getElementById('connecting');
+    const usernameInput = document.getElementById('username');
+    const prankUsername = document.getElementById('prank-username');
+    const statusEl = document.getElementById('connecting-status');
+    const subEl = document.getElementById('connecting-sub');
+    const progressFill = document.querySelector('.progress-fill');
+    const nodes = document.querySelectorAll('.node');
+
+    const messages = [
+      { status: 'Connecting to servers...', sub: 'Establishing secure tunnel to SnapChat— API...' },
+      { status: 'Connect...', sub: 'Connect to the API...' },
+      { status: 'Verifying...', sub: 'Search for the User....' },
+      { status: 'Routing packets...', sub: 'Receive Information....' },
+      { status: 'Decrypting payload...', sub: 'System receives the response from Snapchat...' },
+    ];
+
+    function openPopup() {
+      const v = usernameInput.value.trim();
+      if (!v) return;
+      prankUsername.textContent = v;
+      popup.classList.remove('hidden');
+      connectingOverlay.classList.add('hidden');
+    }
+    function closePopup() { popup.classList.add('hidden'); }
+
+    function showConnecting() {
+      const v = usernameInput.value.trim();
+      if (!v) return;
+      connectingOverlay.classList.remove('hidden');
+      progressFill.style.width = '0%';
+      nodes.forEach(n => n.classList.remove('active'));
+      nodes[0].classList.add('active');
+
+      let step = 0;
+      const totalSteps = messages.length;
+      const interval = setInterval(() => {
+        if (step < totalSteps) {
+          statusEl.textContent = messages[step].status;
+          subEl.textContent = messages[step].sub;
+          const pct = ((step + 1) / totalSteps) * 100;
+          progressFill.style.width = pct + '%';
+          if (nodes[step]) nodes[step].classList.add('active');
+          step++;
+        } else {
+          clearInterval(interval);
+          setTimeout(() => openPopup(), 400);
+        }
+      }, 700);
+    }
+
+    document.getElementById('connect-btn').addEventListener('click', showConnecting);
+    usernameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') showConnecting(); });
+    document.getElementById('close-btn').addEventListener('click', closePopup);
+    document.getElementById('haha2-btn').addEventListener('click', closePopup);
+    popup.addEventListener('click', (e) => { if (e.target === popup) closePopup(); });
+    connectingOverlay.addEventListener('click', (e) => { if (e.target === connectingOverlay) { /* ignore: must wait */ } });
+  </script>
+</body>
+</html>
